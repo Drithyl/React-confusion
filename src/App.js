@@ -1,24 +1,22 @@
 import React from 'react';
 import logo from './logo.svg';
+
+//import the Navbar and NavbarBrand Bootstrap components from the reactstrap module
+import { Navbar, NavbarBrand } from "reactstrap";
 import './App.css';
 
+//create an App component that will then be exported to be rendered in index.js
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      { /* Reactstrap's Navbar component with the dark theme */ }
+      <Navbar dark color="primary">
+      { /* Bootstrap's container for rows */ }
+      <div className="container">
+        { /* NavbarBrand is the component in which we specify the branding (name, logo) */}
+        <NavbarBrand href="/">Ristorante Con Fusion</NavbarBrand>
+      </div>
+      </Navbar>
     </div>
   );
 }
