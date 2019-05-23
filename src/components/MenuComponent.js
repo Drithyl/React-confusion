@@ -1,7 +1,7 @@
 
 import React, { Component } from "react";
 import { Card, CardImg, CardImgOverlay, CardText, CardBody, CardTitle } from "reactstrap";
-import { Media } from "reactstrap";
+import DishDetail from "./DishdetailComponent.js";
 
 class Menu extends Component {
 
@@ -14,6 +14,12 @@ class Menu extends Component {
     {
       selectedDish: null
     };
+
+    console.log("Menu Component constructor() is invoked.");
+  }
+
+  componentDidMount() {
+    console.log("Menu Component componentDidMount() is invoked.");
   }
 
   onDishSelect(dish) {
@@ -21,35 +27,13 @@ class Menu extends Component {
     this.setState({ selectedDish: dish });
   }
 
-  renderDish(dish) {
-    if (dish != null)
-    {
-      return(
-        <Card>
-          <CardImg width="100%" src={dish.image} alt={dish.name} />
-
-          <CardBody>
-            <CardTitle>{dish.name}</CardTitle>
-
-            <CardText>{dish.description}</CardText>
-          </CardBody>
-        </Card>
-      );
-    }
-
-    else
-    {
-      return (
-        <div></div>
-      );
-    }
-  }
-
   //every component must have a render() function that returns a set of HTML
   //elements inside parenthesis that will be the view of the component. This
   //render function gets called directly by React once the component is attached
   //to ReactDOM.render() like in index.js
   render() {
+
+    console.log("Menu Component render() is invoked.");
 
     //dishes are passed as props by the App component
     const menu = this.props.dishes.map((dish) =>
@@ -83,9 +67,8 @@ class Menu extends Component {
           {/* Display whatever HTML is contained inside the menu constant */}
           {menu}
         </div>
-        <div className="row">
-          {this.renderDish(this.state.selectedDish)}
-        </div>
+
+        <DishDetail selectedDish={this.state.selectedDish} />
       </div>
     );
   }
