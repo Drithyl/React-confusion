@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 
-//import the Navbar and NavbarBrand Bootstrap components from the reactstrap module
-import { Navbar, NavbarBrand } from "reactstrap";
-
 //import our own components
 import Menu from "./MenuComponent.js";
 import DishDetail from "./DishdetailComponent.js";
+import Header from "./HeaderComponent.js";
+import Footer from "./FooterComponent.js";
 
 //import the information on our dishes
 import { DISHES } from "../shared/dishes";
@@ -35,20 +34,14 @@ class Main extends Component {
   {
     return (
       <div>
-        { /* Reactstrap's Navbar component with the dark theme */ }
-        <Navbar dark color="primary">
-        { /* Bootstrap's container for rows */ }
-        <div className="container">
-          { /* NavbarBrand is the component in which we specify the branding (name, logo) */}
-          <NavbarBrand href="/">Ristorante Con Fusion</NavbarBrand>
-        </div>
-        </Navbar>
+        <Header />
 
         {/* To render our component we simply need to include it as a self closing tag.
             This one then gets rendered in index.js as part of the App component,
             building a single complex component out of many different ones */}
         <Menu dishes={this.state.dishes} onClick={ (dishId) => this.onDishSelect(dishId) } />
         <DishDetail selectedDish={ this.state.dishes.find((dish) => dish.id === this.state.selectedDish) } />
+        <Footer />
       </div>
     );
   }
