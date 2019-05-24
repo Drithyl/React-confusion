@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+import { Switch, Route, Redirect } from "react-router-dom";
 
 //import our own components
+import Home from "./HomeComponent.js";
 import Menu from "./MenuComponent.js";
 import DishDetail from "./DishdetailComponent.js";
 import Header from "./HeaderComponent.js";
@@ -20,27 +22,43 @@ class Main extends Component {
     //single source of truth for the state of this component. When you need to
     //alter the state, use the setState({}, cb) function
     this.state = {
-      dishes: DISHES,
-      selectedDish: null
+      dishes: DISHES
     };
-  }
-
-  onDishSelect(dishId) {
-    //always use setState to change the state of a Component
-    this.setState({ selectedDish: dishId });
   }
 
   render ()
   {
+    //We will specify further props into the Home component here. This could also
+    //be used for the Menu Route component declared within the Switch below.
+    const HomePage = function()
+    {
+      return (
+        <Home />
+      );
+    }
+
     return (
       <div>
         <Header />
 
-        {/* To render our component we simply need to include it as a self closing tag.
-            This one then gets rendered in index.js as part of the App component,
-            building a single complex component out of many different ones */}
-        <Menu dishes={this.state.dishes} onClick={ (dishId) => this.onDishSelect(dishId) } />
-        <DishDetail selectedDish={ this.state.dishes.find((dish) => dish.id === this.state.selectedDish) } />
+        {/* Switch component from React Router groups together several routes */}
+        <Switch>
+          {/* Route component from React Router specifies the navigation path to reach that resource */}
+          <Route path="/home" component={HomePage} />
+
+          {/* exact attribute means path should match exactly this to route to that component.
+            We can pass the name of the component directly into the component attribute but this
+            will not allow us to pass props into it like we would with the JSX <Component />
+            notation. This is why we create it using the following syntax; declaring a function
+            that returns the component's name along with the props we pass in a JSX format */}
+          <Route exact path="/menu" component={() => <Menu dishes={this.state.dishes} />} />
+
+          {/* Redirect React Router component allows us to specify a default route that will be
+              used whenever the URL provided does not match any of the Routes specified above.
+              The to attribute will specify which Route the user is redirected to */}
+          <Redirect to="/home" />
+        </Switch>
+
         <Footer />
       </div>
     );
