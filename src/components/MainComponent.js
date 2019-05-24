@@ -28,7 +28,6 @@ class Main extends Component {
 
   onDishSelect(dishId) {
     //always use setState to change the state of a Component
-    console.log("Selected " +dishId);
     this.setState({ selectedDish: dishId });
   }
 
