@@ -1,6 +1,6 @@
 
 import React, { Component } from "react";
-import { Card, CardImg, CardImgOverlay, CardText, CardBody, CardTitle } from "reactstrap";
+import { Card, CardImg, CardText, CardBody, CardTitle } from "reactstrap";
 
 class DishDetail extends Component {
 
@@ -34,15 +34,9 @@ class DishDetail extends Component {
 
         <div key={comment.id}>
           <li>
-            <p>
-              {comment.comment}
-            </p>
-          </li>
-
-          <li>
-            <p>
-              -- {comment.author}, {comment.date}
-            </p>
+            <p>{comment.comment}</p>
+            { /* Intl.DateTimeFormat is a JavaScript Object to format Date strings. */ }
+            <p>-- {comment.author}, { new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "2-digit" }).format(new Date(Date.parse(comment.date))) }</p>
           </li>
         </div>
       );
@@ -80,13 +74,15 @@ class DishDetail extends Component {
     }
 
     return(
-      <div className="row">
-        <div className="col-12 col-md-5 m-1">
-          { this.renderDish(this.props.selectedDish) }
-        </div>
+      <div className="container">
+        <div className="row">
+          <div className="col-12 col-md-5 m-1">
+            { this.renderDish(this.props.selectedDish) }
+          </div>
 
-        <div className="col-12 col-md-5 m-1">
-          { this.renderComments(this.props.selectedDish.comments) }
+          <div className="col-12 col-md-5 m-1">
+            { this.renderComments(this.props.selectedDish.comments) }
+          </div>
         </div>
       </div>
     );

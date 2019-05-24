@@ -1,30 +1,17 @@
 
 import React, { Component } from "react";
 import { Card, CardImg, CardImgOverlay, CardText, CardBody, CardTitle } from "reactstrap";
-import DishDetail from "./DishdetailComponent.js";
 
 class Menu extends Component {
 
   constructor(props) {
     super(props);
 
-    //single source of truth for the state of this component. When you need to
-    //alter the state, use the setState({}, cb) function
-    this.state =
-    {
-      selectedDish: null
-    };
-
     console.log("Menu Component constructor() is invoked.");
   }
 
   componentDidMount() {
     console.log("Menu Component componentDidMount() is invoked.");
-  }
-
-  onDishSelect(dish) {
-    //always use setState to change the state of a Component
-    this.setState({ selectedDish: dish });
   }
 
   //every component must have a render() function that returns a set of HTML
@@ -48,8 +35,11 @@ class Menu extends Component {
         //use the keys to know which ones to re-render and which ones to leave as is
         <div key={dish.id} className="col-12 col-md-5 m-1">
           {/* events are named with camelToe case with the same HTML names.
-              Declare a function to be called embedded inside the attribute */}
-          <Card onClick={ () => { this.onDishSelect(dish) } }>
+              Declare a function to be called embedded inside the attribute
+              This function is being passed down as props by the Main component,
+              and since it is defined there, it has access to the Main component's
+              state while also receiving the information of which Menu item was clicked */}
+          <Card onClick={ () => { this.props.onClick(dish.id) } }>
               <CardImg width="100%" src={dish.image} alt={dish.name} />
 
               <CardImgOverlay>
@@ -67,8 +57,6 @@ class Menu extends Component {
           {/* Display whatever HTML is contained inside the menu constant */}
           {menu}
         </div>
-
-        <DishDetail selectedDish={this.state.selectedDish} />
       </div>
     );
   }
