@@ -4,6 +4,7 @@ import { Switch, Route, Redirect } from "react-router-dom";
 
 //import our own components
 import Home from "./HomeComponent.js";
+import About from "./AboutComponent.js";
 import Menu from "./MenuComponent.js";
 import Contact from "./ContactComponent.js";
 import DishDetail from "./DishdetailComponent.js";
@@ -67,6 +68,7 @@ class Main extends Component {
         <Switch>
           {/* Route component from React Router specifies the navigation path to reach that resource */}
           <Route path="/home" component={HomePage} />
+          <Route exact path="/aboutus" component={() => <About leaders={this.state.leaders} />} />
 
           {/* exact attribute means path should match exactly this to route to that component.
               So for instance if a parameter to menu is passed in /menu/:dishId as below, it would
