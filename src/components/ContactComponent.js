@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { Breadcrumb, BreadcrumbItem, Button, Form, FormGroup, Label, Input, Col } from "reactstrap";
+import { Breadcrumb, BreadcrumbItem, Button, Form, FormGroup, Label, Input, Col, FormFeedback } from "reactstrap";
 import { Link } from "react-router-dom";
 
 class Contact extends Component {
@@ -15,12 +15,23 @@ class Contact extends Component {
       email: "",
       agree: false,
       contactType: "Tel.",
-      message: ""
+      message: "",
+
+      //will keep track of which form fields have been altered so that
+      //if it hasn't even been touched, we should not validate the input at all
+      //The first time the user modifies it, this value will flip to true
+      touched: {
+        firstname: false,
+        lastname: false,
+        telnum: false,
+        email: false
+      }
     };
 
     //bind the class context into the functions so the this keyword can be used inside them
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleBlue = this.handleBlur.bind(this);
   }
 
   //handlers for the below's form's input to change the state
@@ -51,8 +62,73 @@ class Contact extends Component {
     event.preventDefault();
   }
 
+  //will indicate which particular field has been modified. Each input box has the
+  //on-blur event which will trigger when it is first clicked. The reason this
+  //is a function within a function is because it is first passed as a handler
+  //for the event attribute in the render method below calling it and passing
+  //the field name that it concerns, and returns the actual handler function
+  //for the event to use
+  handleBlur = (field) => (evt) =>
+  {
+    this.setState({
+      touched: { ...this.state.touched, [field]: true}
+    })
+  }
+
+  validate(firstname, lastname, telnum, email)
+  {
+    const errors = {
+      firstname: "",
+      lastname: "",
+      telnum: "",
+      email: ""
+    };
+
+    const reg = /^\d+$/;
+
+    if (this.state.touched.firstname === true)
+    {
+      if (firstname.length < 3)
+      {
+        errors.firstname = "First Name should be >= 3 characters";
+      }
+
+      else if (firstname.length > 10)
+      {
+        errors.firstname = "First Name should be <= 10 characters";
+      }
+    }
+
+    if (this.state.touched.lastname === true)
+    {
+      if (lastname.length < 3)
+      {
+        errors.lastname = "Last Name should be >= 3 characters";
+      }
+
+      else if (lastname.length > 10)
+      {
+        errors.lastname = "Last Name should be <= 10 characters";
+      }
+    }
+
+    if (this.state.touched.telnum === true && reg.test(telnum) === false)
+    {
+      errors.telnum = "Tel. Number should contain only numbers";
+    }
+
+    if (this.state.touched.email === true && email.includes("@") === false)
+    {
+      errors.email = "Email should contain a @";
+    }
+
+    return errors;
+  }
+
   render()
   {
+    const errors = this.validate(this.state.firstname, this.state.lastname, this.state.telnum, this.state.email);
+
     return(
       <div className="container">
         <div className="row">
@@ -119,10 +195,35 @@ class Contact extends Component {
                 {/* Col md={X} is like using div className="col-X" */}
                 <Col md={10}>
                   {/* By tying the value to the state this becomes a controlled form,
-                      since the state becomes the single source of truth. We also add
-                      the handler function for the on-change event where we will be
-                      updating the value of the state with what the user inputted */}
-                  <Input type="text" id="firstname" name="firstname" placeholder="First Name" value={this.state.firstname} onChange={this.handleInputChange} />
+                      since the state becomes the single source of truth.
+
+                      The valid and invalid attributes will mark the field as valid
+                      or invalid depending on whether the errors object contains
+                      an error for this field.
+
+                      Add also the handler for when the user first writes in
+                      a field and clicks out of it, which will call it to pass
+                      the name of the field in question, which then returns the
+                      function that is used as handler.
+
+                      We add also the handler function for the on-change event
+                      where we will be updating the value of the state with
+                      what the user inputted */}
+                  <Input
+                    type="text"
+                    id="firstname"
+                    name="firstname"
+                    placeholder="First Name"
+                    value={this.state.firstname}
+                    valid={errors.firstname === ""}
+                    invalid={errors.firstname !== ""}
+                    onBlur={this.handleBlur("firstname")}
+                    onChange={this.handleInputChange}
+                  />
+
+                  {/* FormFeedback will display whatever we put inside it to give
+                      some feedback to the users of the form */}
+                  <FormFeedback>{errors.firstname}</FormFeedback>
                 </Col>
               </FormGroup>
 
@@ -130,7 +231,18 @@ class Contact extends Component {
                 <Label htmlFor="lastname" md={2}>Last Name</Label>
 
                 <Col md={10}>
-                  <Input type="text" id="lastname" name="lastname" placeholder="Last Name" value={this.state.lastname} onChange={this.handleInputChange} />
+                  <Input
+                    type="text"
+                    id="lastname"
+                    name="lastname"
+                    placeholder="Last Name"
+                    value={this.state.lastname}
+                    valid={errors.lastname === ""}
+                    invalid={errors.lastname !== ""}
+                    onBlur={this.handleBlur("lastname")}
+                    onChange={this.handleInputChange}
+                  />
+                  <FormFeedback>{errors.lastname}</FormFeedback>
                 </Col>
               </FormGroup>
 
@@ -138,7 +250,18 @@ class Contact extends Component {
                 <Label htmlFor="telnum" md={2}>Contact Tel.</Label>
 
                 <Col md={10}>
-                  <Input type="tel" id="telnum" name="telnum" placeholder="Tel. Number" value={this.state.telnum} onChange={this.handleInputChange} />
+                  <Input
+                    type="tel"
+                    id="telnum"
+                    name="telnum"
+                    placeholder="Tel. Number"
+                    value={this.state.telnum}
+                    valid={errors.telnum === ""}
+                    invalid={errors.telnum !== ""}
+                    onBlur={this.handleBlur("telnum")}
+                    onChange={this.handleInputChange}
+                  />
+                  <FormFeedback>{errors.telnum}</FormFeedback>
                 </Col>
               </FormGroup>
 
@@ -146,7 +269,18 @@ class Contact extends Component {
                 <Label htmlFor="email" md={2}>Email</Label>
 
                 <Col md={10}>
-                  <Input type="email" id="email" name="email" placeholder="Email" value={this.state.email} onChange={this.handleInputChange} />
+                  <Input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Email"
+                    value={this.state.email}
+                    valid={errors.email === ""}
+                    invalid={errors.email !== ""}
+                    onBlur={this.handleBlur("email")}
+                    onChange={this.handleInputChange}
+                  />
+                  <FormFeedback>{errors.email}</FormFeedback>
                 </Col>
               </FormGroup>
 
@@ -158,13 +292,23 @@ class Contact extends Component {
                   {/* Create a checkbox group */}
                   <FormGroup check>
                     <Label check>
-                      <Input type="checkbox" name="agree" checked={this.state.agree} onChange={this.handleInputChange} /> {" "}<strong>May we contact you?</strong>
+                      <Input
+                        type="checkbox"
+                        name="agree"
+                        checked={this.state.agree}
+                        onChange={this.handleInputChange}
+                      /> {" "}<strong>May we contact you?</strong>
                     </Label>
                   </FormGroup>
                 </Col>
 
                 <Col md={{size: 3, offset: 1}}>
-                  <Input type="select" name="contactType" value={this.state.contactType} onChange={this.handleInputChange}>
+                  <Input
+                    type="select"
+                    name="contactType"
+                    value={this.state.contactType}
+                    onChange={this.handleInputChange}
+                  >
                     <option>Tel.</option>
                     <option>Email</option>
                   </Input>
@@ -175,7 +319,14 @@ class Contact extends Component {
                 <Label htmlFor="message" md={2}>Your Feedback</Label>
 
                 <Col md={10}>
-                  <Input type="textarea" id="message" name="message" rows="12" value={this.state.message} onChange={this.handleInputChange} />
+                  <Input
+                    type="textarea"
+                    id="message"
+                    name="message"
+                    rows="12"
+                    value={this.state.message}
+                    onChange={this.handleInputChange}
+                  />
                 </Col>
               </FormGroup>
 
