@@ -1,6 +1,7 @@
 
 import React from "react";
-import { Card, CardImg, CardImgOverlay, CardText, CardBody, CardTitle } from "reactstrap";
+import { Card, CardImg, CardImgOverlay, CardText, CardBody, CardTitle, Breadcrumb, BreadcrumbItem } from "reactstrap";
+import { Link } from "react-router-dom";
 
 //This is another way of creating a component. The previous Presentational Component
 //that was the Menu was turned into two Functional Components (components that are
@@ -17,12 +18,14 @@ function RenderMenuItem({ dish, onClick })
     //This function is being passed down as props by the Main component,
     //and since it is defined there, it has access to the Main component's
     //state while also receiving the information of which Menu item was clicked
-    <Card onClick={ () => { onClick(dish.id) } }>
+    <Card>
+      <Link to={`/menu/${dish.id}`} >
         <CardImg width="100%" src={dish.image} alt={dish.name} />
 
         <CardImgOverlay>
           <CardTitle>{dish.name}</CardTitle>
         </CardImgOverlay>
+      </Link>
     </Card>
   );
 }
@@ -41,7 +44,7 @@ const Menu = function(props)
       //of the virtual DOM that have changed, so if the array of items changes, it will
       //use the keys to know which ones to re-render and which ones to leave as is
       <div key={dish.id} className="col-12 col-md-5 m-1">
-        <RenderMenuItem dish={dish} onClick={props.onClick}/>
+        <RenderMenuItem dish={dish} />
       </div>
     );
   });
@@ -49,6 +52,19 @@ const Menu = function(props)
   return (
     //HTML attributes use camelCase in JSX to not conflict with JS syntax and keywords
     <div className="container">
+      <div className="row">
+        {/* Add breadcrumbs from reactstrap to keep links to previous pages */}
+        <Breadcrumb>
+          <BreadcrumbItem><Link to="/home">Home</Link></BreadcrumbItem>
+          <BreadcrumbItem active>Menu</BreadcrumbItem>
+        </Breadcrumb>
+
+        <div className="col-12">
+          <h3>Menu</h3>
+          <hr />
+        </div>
+      </div>
+
       <div className="row">
         {/* Display whatever HTML is contained inside the menu constant */}
         {menu}
