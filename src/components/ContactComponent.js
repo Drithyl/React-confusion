@@ -1,6 +1,7 @@
 
 import React, { Component } from 'react';
-import { Breadcrumb, BreadcrumbItem, Button, Form, FormGroup, Label, Input, Col, FormFeedback } from "reactstrap";
+import { Breadcrumb, BreadcrumbItem, Button, Label, Row, Col } from "reactstrap";
+import { Control, LocalForm, Errors } from "react-redux-form";
 import { Link } from "react-router-dom";
 
 class Contact extends Component {
@@ -8,127 +9,19 @@ class Contact extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      firstname: "",
-      lastname: "",
-      telnum: "",
-      email: "",
-      agree: false,
-      contactType: "Tel.",
-      message: "",
-
-      //will keep track of which form fields have been altered so that
-      //if it hasn't even been touched, we should not validate the input at all
-      //The first time the user modifies it, this value will flip to true
-      touched: {
-        firstname: false,
-        lastname: false,
-        telnum: false,
-        email: false
-      }
-    };
-
     //bind the class context into the functions so the this keyword can be used inside them
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleInputChange = this.handleInputChange.bind(this);
-    this.handleBlue = this.handleBlur.bind(this);
   }
 
-  //handlers for the below's form's input to change the state
-  handleInputChange(event)
+  //values are passed to this function by the react-redux-form
+  handleSubmit(values)
   {
-    const target = event.target;
-
-    //if the target type is a checkbox, the value is stored in the event.target.checked
-    //field, otherwise it gets stored inside the event.target.value field
-    const value = target.type === "checkbox" ? target.checked : target.value;
-
-    //the event.target.name field contains the value of the name attribute given
-    //to the input field in the JSX code below. This name must match the name of
-    //the state key for this code to work
-    const name = target.name;
-
-    this.setState({
-      [name]: value
-    });
-  }
-
-  handleSubmit(event)
-  {
-    console.log(`Current state is ${JSON.stringify(this.state, null, 2)}`);
-    alert(`Current state is ${JSON.stringify(this.state, null, 2)}`);
-
-    //this prevents the default browser behaviour of going to the next page on submit
-    event.preventDefault();
-  }
-
-  //will indicate which particular field has been modified. Each input box has the
-  //on-blur event which will trigger when it is first clicked. The reason this
-  //is a function within a function is because it is first passed as a handler
-  //for the event attribute in the render method below calling it and passing
-  //the field name that it concerns, and returns the actual handler function
-  //for the event to use
-  handleBlur = (field) => (evt) =>
-  {
-    this.setState({
-      touched: { ...this.state.touched, [field]: true}
-    })
-  }
-
-  validate(firstname, lastname, telnum, email)
-  {
-    const errors = {
-      firstname: "",
-      lastname: "",
-      telnum: "",
-      email: ""
-    };
-
-    const reg = /^\d+$/;
-
-    if (this.state.touched.firstname === true)
-    {
-      if (firstname.length < 3)
-      {
-        errors.firstname = "First Name should be >= 3 characters";
-      }
-
-      else if (firstname.length > 10)
-      {
-        errors.firstname = "First Name should be <= 10 characters";
-      }
-    }
-
-    if (this.state.touched.lastname === true)
-    {
-      if (lastname.length < 3)
-      {
-        errors.lastname = "Last Name should be >= 3 characters";
-      }
-
-      else if (lastname.length > 10)
-      {
-        errors.lastname = "Last Name should be <= 10 characters";
-      }
-    }
-
-    if (this.state.touched.telnum === true && reg.test(telnum) === false)
-    {
-      errors.telnum = "Tel. Number should contain only numbers";
-    }
-
-    if (this.state.touched.email === true && email.includes("@") === false)
-    {
-      errors.email = "Email should contain a @";
-    }
-
-    return errors;
+    console.log(`Current state is ${JSON.stringify(values, null, 2)}`);
+    alert(`Current state is ${JSON.stringify(values, null, 2)}`);
   }
 
   render()
   {
-    const errors = this.validate(this.state.firstname, this.state.lastname, this.state.telnum, this.state.email);
-
     return(
       <div className="container">
         <div className="row">
@@ -181,11 +74,9 @@ class Contact extends Component {
           </div>
 
           <div className="col-12 col-md-9">
-            {/* Tie in the on-submit event to our functions to handle input */}
-            <Form onSubmit={this.handleSubmit}>
-              {/* FromGroup row defines this as a row inside the form, allowing
-                  us to use Bootstrap's grid system within the form itself*/}
-              <FormGroup row>
+            <LocalForm onSubmit={(values) => this.handleSubmit(values)}>
+              {/* Row replaces the previous FormGroup from reactstrap */}
+              <Row className="form-group">
                 {/* htmlFor is the JSX equivalent of HTML's for, and marks this
                     label as belonging to the form element with the same name.
                     md={2} means for medium screen sizes and above the Label
@@ -194,150 +85,112 @@ class Contact extends Component {
 
                 {/* Col md={X} is like using div className="col-X" */}
                 <Col md={10}>
-                  {/* By tying the value to the state this becomes a controlled form,
-                      since the state becomes the single source of truth.
-
-                      The valid and invalid attributes will mark the field as valid
-                      or invalid depending on whether the errors object contains
-                      an error for this field.
-
-                      Add also the handler for when the user first writes in
-                      a field and clicks out of it, which will call it to pass
-                      the name of the field in question, which then returns the
-                      function that is used as handler.
-
-                      We add also the handler function for the on-change event
-                      where we will be updating the value of the state with
-                      what the user inputted */}
-                  <Input
-                    type="text"
+                  {/* Control. is imported from the react-redux-form and replaces
+                      the Input element and the type attribute. It needs a model
+                      attribute specifying the field name in which the value will
+                      be stored as well. */}
+                  <Control.text
+                    model=".firstname"
                     id="firstname"
                     name="firstname"
                     placeholder="First Name"
-                    value={this.state.firstname}
-                    valid={errors.firstname === ""}
-                    invalid={errors.firstname !== ""}
-                    onBlur={this.handleBlur("firstname")}
-                    onChange={this.handleInputChange}
+                    className="form-control"
                   />
-
-                  {/* FormFeedback will display whatever we put inside it to give
-                      some feedback to the users of the form */}
-                  <FormFeedback>{errors.firstname}</FormFeedback>
                 </Col>
-              </FormGroup>
+              </Row>
 
-              <FormGroup row>
+              <Row className="form-group">
                 <Label htmlFor="lastname" md={2}>Last Name</Label>
 
                 <Col md={10}>
-                  <Input
-                    type="text"
+                  <Control.text
+                    model=".lastname"
                     id="lastname"
                     name="lastname"
                     placeholder="Last Name"
-                    value={this.state.lastname}
-                    valid={errors.lastname === ""}
-                    invalid={errors.lastname !== ""}
-                    onBlur={this.handleBlur("lastname")}
-                    onChange={this.handleInputChange}
+                    className="form-control"
                   />
-                  <FormFeedback>{errors.lastname}</FormFeedback>
                 </Col>
-              </FormGroup>
+              </Row>
 
-              <FormGroup row>
+              <Row className="form-group">
                 <Label htmlFor="telnum" md={2}>Contact Tel.</Label>
 
                 <Col md={10}>
-                  <Input
-                    type="tel"
+                  <Control.text
+                    model=".telnum"
                     id="telnum"
                     name="telnum"
                     placeholder="Tel. Number"
-                    value={this.state.telnum}
-                    valid={errors.telnum === ""}
-                    invalid={errors.telnum !== ""}
-                    onBlur={this.handleBlur("telnum")}
-                    onChange={this.handleInputChange}
+                    className="form-control"
                   />
-                  <FormFeedback>{errors.telnum}</FormFeedback>
                 </Col>
-              </FormGroup>
+              </Row>
 
-              <FormGroup row>
+              <Row className="form-group">
                 <Label htmlFor="email" md={2}>Email</Label>
 
                 <Col md={10}>
-                  <Input
-                    type="email"
+                  <Control.text
+                    model=".email"
                     id="email"
                     name="email"
                     placeholder="Email"
-                    value={this.state.email}
-                    valid={errors.email === ""}
-                    invalid={errors.email !== ""}
-                    onBlur={this.handleBlur("email")}
-                    onChange={this.handleInputChange}
+                    className="form-control"
                   />
-                  <FormFeedback>{errors.email}</FormFeedback>
                 </Col>
-              </FormGroup>
+              </Row>
 
-              <FormGroup row>
+              <Row className="form-group">
                 {/* Another way to specify the column size is to write in JS object values,
                     so this element will occupy 6 columns for medium and above sizes, and
                     be offset two columns to the right */}
                 <Col md={{size: 6, offset: 2}}>
-                  {/* Create a checkbox group */}
-                  <FormGroup check>
+                  <div className="form-check">
                     <Label check>
-                      <Input
-                        type="checkbox"
+                      <Control.checkbox
+                        model=".agree"
                         name="agree"
-                        checked={this.state.agree}
-                        onChange={this.handleInputChange}
+                        className="form-check-input"
                       /> {" "}<strong>May we contact you?</strong>
                     </Label>
-                  </FormGroup>
+                  </div>
                 </Col>
 
                 <Col md={{size: 3, offset: 1}}>
-                  <Input
-                    type="select"
+                  <Control.select
+                    model=".contactType"
                     name="contactType"
-                    value={this.state.contactType}
-                    onChange={this.handleInputChange}
+                    className="form-control"
                   >
                     <option>Tel.</option>
                     <option>Email</option>
-                  </Input>
+                  </Control.select>
                 </Col>
-              </FormGroup>
+              </Row>
 
-              <FormGroup row>
+              <Row className="form-group">
                 <Label htmlFor="message" md={2}>Your Feedback</Label>
 
                 <Col md={10}>
-                  <Input
-                    type="textarea"
+                  <Control.textarea
+                    model=".message"
                     id="message"
                     name="message"
                     rows="12"
-                    value={this.state.message}
-                    onChange={this.handleInputChange}
+                    className="form-control"
                   />
                 </Col>
-              </FormGroup>
+              </Row>
 
-              <FormGroup row>
+              <Row className="form-group">
                 <Col md={{size: 10, offset: 2}}>
                   <Button type="submit" color="primary">
                     Send Feedback
                   </Button>
                 </Col>
-              </FormGroup>
-            </Form>
+              </Row>
+            </LocalForm>
           </div>
         </div>
       </div>
