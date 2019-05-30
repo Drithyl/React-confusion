@@ -4,6 +4,49 @@ import { Breadcrumb, BreadcrumbItem, Button, Label, Row, Col } from "reactstrap"
 import { Control, LocalForm, Errors } from "react-redux-form";
 import { Link } from "react-router-dom";
 
+//Check that a value is not null and has length
+const required = (val) =>
+{
+  return val != null && val.length;
+};
+
+//Take a length and return a function that takes a value that returns
+//true if the value is null or if it's below or equal to the max length.
+//The reason for this pattern is that the validation attribute for react-
+//redux-form takes functions that it calles by passing in the value of the
+//input field, but we also want to specify the length limits in each of the
+//fields individually without having to create different maxLength functions.
+//So we create a function that takes a length as parameter that returns the
+//function that the validation attribute uses respecting that length.
+const maxLength = (len) =>
+{
+  return function(val)
+  {
+    //val == null passes the check because that's when there is still no
+    //input in the field typed by the user, so we don't want to show that as error
+    return val == null || val.length <= len;
+  }
+}
+
+const minLength = (len) =>
+{
+  return function(val)
+  {
+    //another way of doing the above check but with minLength
+    return val != null && val.length >= len;
+  }
+};
+
+const isNumber = (val) =>
+{
+  return isNaN(Number(val)) === false;
+}
+
+const validEmail = (val) =>
+{
+  return /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(val);
+}
+
 class Contact extends Component {
 
   constructor(props) {
@@ -88,13 +131,40 @@ class Contact extends Component {
                   {/* Control. is imported from the react-redux-form and replaces
                       the Input element and the type attribute. It needs a model
                       attribute specifying the field name in which the value will
-                      be stored as well. */}
+                      be stored as well.
+
+                      validators is the attribute for the react-redux-form that
+                      allows us to specify a set of functions to do validation.
+                      It takes them in the form of a JS object and passes in
+                      them the value of the input in question. */}
                   <Control.text
                     model=".firstname"
                     id="firstname"
                     name="firstname"
                     placeholder="First Name"
                     className="form-control"
+                    validators={{
+                      required,
+                      minLength: minLength(3),
+                      maxLength: maxLength(15)
+                    }}
+                  />
+
+                  {/* Errors is a react-redux-form element to display validation
+                      errors to the user. The model takes the field name of the
+                      input in question, show specifies when the errors will be
+                      shown, and messages takes a JS object with the same keys
+                      that were specified above as validators. If they evaluated
+                      to false, then the error message specified here will be shown. */}
+                  <Errors
+                    className="text-danger"
+                    model=".firstname"
+                    show="touched"
+                    messages={{
+                      required: "Required",
+                      minLength: "Must be greater than 2 characters",
+                      maxLength: "Must be 15 characters or less"
+                    }}
                   />
                 </Col>
               </Row>
@@ -109,6 +179,22 @@ class Contact extends Component {
                     name="lastname"
                     placeholder="Last Name"
                     className="form-control"
+                    validators={{
+                      required,
+                      minLength: minLength(3),
+                      maxLength: maxLength(15)
+                    }}
+                  />
+
+                  <Errors
+                    className="text-danger"
+                    model=".lastname"
+                    show="touched"
+                    messages={{
+                      required: "Required",
+                      minLength: "Must be greater than 2 characters",
+                      maxLength: "Must be 15 characters or less"
+                    }}
                   />
                 </Col>
               </Row>
@@ -123,6 +209,24 @@ class Contact extends Component {
                     name="telnum"
                     placeholder="Tel. Number"
                     className="form-control"
+                    validators={{
+                      required,
+                      minLength: minLength(3),
+                      maxLength: maxLength(15),
+                      isNumber
+                    }}
+                  />
+
+                  <Errors
+                    className="text-danger"
+                    model=".telnum"
+                    show="touched"
+                    messages={{
+                      required: "Required",
+                      minLength: "Must be greater than 2 numbers",
+                      maxLength: "Must be 15 numbers or less",
+                      isNumber: "Must be a number"
+                    }}
                   />
                 </Col>
               </Row>
@@ -137,6 +241,20 @@ class Contact extends Component {
                     name="email"
                     placeholder="Email"
                     className="form-control"
+                    validators={{
+                      required,
+                      validEmail
+                    }}
+                  />
+
+                  <Errors
+                    className="text-danger"
+                    model=".email"
+                    show="touched"
+                    messages={{
+                      required: "Required",
+                      validEmail: "Invalid Email Address"
+                    }}
                   />
                 </Col>
               </Row>
