@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react';
 import { Breadcrumb, BreadcrumbItem, Button, Label, Row, Col } from "reactstrap";
-import { Control, LocalForm, Errors } from "react-redux-form";
+import { Control, Form, Errors } from "react-redux-form";
 import { Link } from "react-router-dom";
 
 //Check that a value is not null and has length
@@ -61,6 +61,7 @@ class Contact extends Component {
   {
     console.log(`Current state is ${JSON.stringify(values, null, 2)}`);
     alert(`Current state is ${JSON.stringify(values, null, 2)}`);
+    this.props.resetFeedbackForm();
   }
 
   render()
@@ -117,7 +118,10 @@ class Contact extends Component {
           </div>
 
           <div className="col-12 col-md-9">
-            <LocalForm onSubmit={(values) => this.handleSubmit(values)}>
+            {/* The Form from react-redux-form preserves its input state even after
+                navigating away from it.
+                model gives this form a name to be used by the resetFeedbackForm action */}
+            <Form model="feedback" onSubmit={(values) => this.handleSubmit(values)}>
               {/* Row replaces the previous FormGroup from reactstrap */}
               <Row className="form-group">
                 {/* htmlFor is the JSX equivalent of HTML's for, and marks this
@@ -308,7 +312,7 @@ class Contact extends Component {
                   </Button>
                 </Col>
               </Row>
-            </LocalForm>
+            </Form>
           </div>
         </div>
       </div>

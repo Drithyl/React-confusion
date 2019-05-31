@@ -10,6 +10,10 @@ import { connect } from "react-redux";
 //import the addComment action creator so the action objects can be created and dispatched
 import { addComment, fetchDishes } from "../redux/ActionCreators";
 
+//import premade actions from the react-redux-form module to access actions.reset
+//to easily reset a form's state
+import { actions } from "react-redux-form";
+
 //import our own components
 import Home from "./HomeComponent.js";
 import About from "./AboutComponent.js";
@@ -52,7 +56,12 @@ const mapDispatchToProps = function(dispatch)
 
     fetchDishes: () =>
     {
-      return dispatch((fetchDishes()));
+      return dispatch(fetchDishes());
+    },
+
+    resetFeedbackForm: () =>
+    {
+      return dispatch(actions.reset("feedback"));
     }
   }
 };
@@ -131,7 +140,9 @@ class Main extends Component {
               parameters into the component (DishWithId), among them the match object,
               from which the parameter can be extracted with match.params.dishId */}
           <Route path="/menu/:dishId" component={DishWithId} />
-          <Route exact path="/contactus" component={Contact} />
+
+          {/* Pass the resetFeedbackForm dispatch method to be able to reset the feedback form there */}
+          <Route exact path="/contactus" component={() => <Contact resetFeedbackForm={this.props.resetFeedbackForm} />} />
 
           {/* Redirect React Router component allows us to specify a default route that will be
               used whenever the URL provided does not match any of the Routes specified above.

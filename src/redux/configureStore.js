@@ -1,9 +1,12 @@
 
 import { createStore, combineReducers, applyMiddleware } from "redux";
+import { createForms } from "react-redux-form";
 import { Dishes } from "./dishes.js";
 import { Comments } from "./comments.js";
 import { Promotions } from "./promotions.js";
 import { Leaders } from "./leaders.js";
+import { InitialFeedback } from "./forms.js";
+
 import thunk from "redux-thunk";
 import logger from "redux-logger";
 
@@ -20,7 +23,13 @@ export const ConfigureStore = () =>
       dishes: Dishes,
       comments: Comments,
       promotions: Promotions,
-      leaders: Leaders
+      leaders: Leaders,
+      //expand the returned object from createForms defined in forms.js
+      //we supply this InitialFeedback to be able to reset the form to its
+      //initial state after submitting the form
+      ...createForms({
+        feedback: InitialFeedback
+      })
     }),
 
     //enhancers. thunk allows us to return functions instead of action objects,
