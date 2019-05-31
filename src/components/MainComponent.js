@@ -7,6 +7,9 @@ import { Switch, Route, Redirect, withRouter } from "react-router-dom";
 //will be used at the bottom in the export statement to link the component to the store
 import { connect } from "react-redux";
 
+//import the addComment action creator so the action objects can be created and dispatched
+import { addComment } from "../redux/ActionCreators";
+
 //import our own components
 import Home from "./HomeComponent.js";
 import About from "./AboutComponent.js";
@@ -16,8 +19,8 @@ import DishDetail from "./DishdetailComponent.js";
 import Header from "./HeaderComponent.js";
 import Footer from "./FooterComponent.js";
 
-//will map the redux store's state (see reducer.js) into props
-//that will become available to this component as props
+//will map the redux store's state that will
+//become available to this component as props
 const mapStateToProps = (state) =>
 {
   return {
@@ -26,7 +29,28 @@ const mapStateToProps = (state) =>
     promotions: state.promotions,
     leaders: state.leaders
   };
-}
+};
+
+//takes the dispatch store's function as a parameter. This makes available all
+//the different action dispatch functions to the props of the component that is
+//enclosed by the connect function as seen at the bottom of this file
+const mapDispatchToProps = function(dispatch)
+{
+  return {
+    
+    //dispatch property; defines function to dispatch an addComment action
+    addComment: (dishId, rating, author, comment) =>
+    {
+      //dispatch function from the store supplied as parameter. Whenever the above
+      //addComment property is invoked, the addComment action returned below will
+      //get dispatched
+      return dispatch(
+        //ActionCreator function for adding comments that returns the action object
+        addComment(dishId, rating, author, comment)
+      );
+    }
+  }
+};
 
 //create an App component that will then be exported to be rendered in index.js
 class Main extends Component {
@@ -53,10 +77,15 @@ class Main extends Component {
 
     const DishWithId = ({match}) =>
     {
+      //Pass the addComment dispatch action function into the DishDetail component.
+      //This function is defined above in the mapDispatchToProps function, and is
+      //made available to the Main component here by the connect() function used
+      //at the bottom of this file.
       return (
         <DishDetail
           dish={this.props.dishes.find((dish) => dish.id === parseInt(match.params.dishId, 10))}
           comments={this.props.comments.filter((comment) => comment.dishId === parseInt(match.params.dishId, 10))}
+          addComment={this.props.addComment}
         />
       );
     };
@@ -99,4 +128,5 @@ class Main extends Component {
 }
 
 //if we weren't using React Router we would only need the connect((mapStateToProps)(Main) part
-export default withRouter(connect(mapStateToProps)(Main));
+//
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Main));
