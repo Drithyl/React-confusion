@@ -3,6 +3,7 @@ import React, { Component } from "react";
 import { Card, CardImg, CardText, CardBody, CardTitle, Breadcrumb, BreadcrumbItem, Button, Modal, ModalHeader, ModalBody, Form, FormGroup, Input, Label, Row, Col } from "reactstrap";
 import { Control, LocalForm, Errors } from "react-redux-form";
 import { Link } from "react-router-dom";
+import { Loading } from "./LoadingComponent.js";
 
 const required = (val) =>
 {
@@ -195,6 +196,30 @@ function RenderComments({ comments, addComment, dishId })
 
 const DishDetail = function(props)
 {
+  //props received by the MainComponent.js
+  if (props.isLoading === true)
+  {
+    return (
+      <div className="container">
+        <div className="row">
+          <Loading />
+        </div>
+      </div>
+    );
+  }
+
+  //error happened while fetching data from the server
+  if (props.errMess != null)
+  {
+    return (
+      <div className="container">
+        <div className="row">
+          <h4>{props.errMess}</h4>
+        </div>
+      </div>
+    );
+  }
+
   if (props.dish == null)
   {
     return (

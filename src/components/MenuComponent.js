@@ -2,6 +2,7 @@
 import React from "react";
 import { Card, CardImg, CardImgOverlay, CardText, CardBody, CardTitle, Breadcrumb, BreadcrumbItem } from "reactstrap";
 import { Link } from "react-router-dom";
+import { Loading } from "./LoadingComponent.js";
 
 //This is another way of creating a component. The previous Presentational Component
 //that was the Menu was turned into two Functional Components (components that are
@@ -33,7 +34,7 @@ function RenderMenuItem({ dish, onClick })
 const Menu = function(props)
 {
   //dishes are passed as props by the App component
-  const menu = props.dishes.map((dish) =>
+  const menu = props.dishes.dishes.map((dish) =>
   {
     //the return will return this HTML code for every index of the props.dishes
     //array, and store the final HTML array into menu.
@@ -48,6 +49,28 @@ const Menu = function(props)
       </div>
     );
   });
+
+  if (props.dishes.isLoading === true)
+  {
+    return (
+      <div className="container">
+        <div className="row">
+          <Loading />
+        </div>
+      </div>
+    );
+  }
+
+  if (props.dishes.errMess)
+  {
+    return (
+      <div className="container">
+        <div className="row">
+          <h4>{props.dishes.errMess}</h4>
+        </div>
+      </div>
+    );
+  }
 
   return (
     //HTML attributes use camelCase in JSX to not conflict with JS syntax and keywords

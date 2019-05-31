@@ -8,7 +8,7 @@ import { Switch, Route, Redirect, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 
 //import the addComment action creator so the action objects can be created and dispatched
-import { addComment } from "../redux/ActionCreators";
+import { addComment, fetchDishes } from "../redux/ActionCreators";
 
 //import our own components
 import Home from "./HomeComponent.js";
@@ -37,7 +37,7 @@ const mapStateToProps = (state) =>
 const mapDispatchToProps = function(dispatch)
 {
   return {
-    
+
     //dispatch property; defines function to dispatch an addComment action
     addComment: (dishId, rating, author, comment) =>
     {
@@ -48,6 +48,11 @@ const mapDispatchToProps = function(dispatch)
         //ActionCreator function for adding comments that returns the action object
         addComment(dishId, rating, author, comment)
       );
+    },
+
+    fetchDishes: () =>
+    {
+      return dispatch((fetchDishes()));
     }
   }
 };
@@ -59,6 +64,13 @@ class Main extends Component {
     super(props);
   }
 
+  //React lifecycle method that gets executed when this component
+  //was mounted in the view, the perfect time to fetch application data
+  componentDidMount()
+  {
+    this.props.fetchDishes();
+  }
+
   render ()
   {
     //We will specify further props into the Home component here. This could also
@@ -66,9 +78,13 @@ class Main extends Component {
     const HomePage = () =>
     {
       return (
-        //pass the dish which is featured into the Home component
+        //pass the dish which is featured into the Home component. dishes info
+        //is now inside of dishes.dishes, since dishes is now a state that also
+        //contains other props like isLoading (defined in redux/dishes.js)
         <Home
-          dish={ this.props.dishes.find((dish) => dish.featured === true) }
+          dish={ this.props.dishes.dishes.find((dish) => dish.featured === true) }
+          dishesLoading={this.props.dishes.isLoading}
+          dishesErrMess={this.props.dishes.errMess}
           promotion={ this.props.promotions.find((promotion) => promotion.featured === true) }
           leader={ this.props.leaders.find((leader) => leader.featured === true) }
         />
@@ -83,7 +99,9 @@ class Main extends Component {
       //at the bottom of this file.
       return (
         <DishDetail
-          dish={this.props.dishes.find((dish) => dish.id === parseInt(match.params.dishId, 10))}
+          dish={this.props.dishes.dishes.find((dish) => dish.id === parseInt(match.params.dishId, 10))}
+          isLoading={this.props.dishes.isLoading}
+          errMess={this.props.dishes.errMess}
           comments={this.props.comments.filter((comment) => comment.dishId === parseInt(match.params.dishId, 10))}
           addComment={this.props.addComment}
         />
