@@ -68,6 +68,60 @@ export const postComment = function(dishId, rating, author, comment)
   }
 };
 
+export const postFeedback = function(values)
+{
+  return function(dispatch)
+  {
+    const feedback =
+    {
+      firstname: values.firstname,
+      lastname: values.lastname,
+      telnum: values.telnum,
+      email: values.email,
+      agree: values.agree,
+      contactType: values.contactType,
+      message: values.message
+    };
+
+    return fetch(`${baseUrl}/feedback`, {
+
+      //when method is not specified it'll default to GET
+      method: "POST",
+      //POST requires you to send a body
+      body: JSON.stringify(feedback),
+      headers:
+      {
+        "Content-Type": "application/json"
+      },
+      credentials: "same-origin"
+    })
+    .then((response) =>
+    {
+      if (response.ok === true)
+      {
+        alert(`Thank you for your feedback!: ${JSON.stringify(feedback, null, 2)}`);
+        return response;
+      }
+
+      else
+      {
+        let error = new Error(`Error ${response.status}: ${response.statusText}`);
+        error.response = response;
+        throw error;
+      }
+    }, (err) =>
+    {
+      throw new Error(err.message);
+    })
+    .then((response) => response.json())
+    .catch((err) =>
+    {
+      console.log(`Feedback:`, err.message);
+      alert(`Your feedback could not be sent\nError: ${err.message}`);
+    });
+  }
+};
+
 //thunk. A thunk is a subroutine used to inject additional calculations into
 //another subroutine. This is why it returns another function
 export const fetchDishes = function()
@@ -238,5 +292,61 @@ export const addPromos = function(promos)
 
     type: ActionTypes.ADD_PROMOS,
     payload: promos
+  };
+};
+
+export const fetchLeaders = function()
+{
+  return function(dispatch)
+  {
+    dispatch(leadersLoading(true));
+
+    return fetch(`${baseUrl}/leaders`)
+      .then((response) =>
+      {
+        if (response.ok === true)
+        {
+          return response;
+        }
+
+        else
+        {
+          let error = new Error(`Error ${response.status}: ${response.statusText}`);
+          error.response = response;
+          throw error;
+        }
+      }, (err) =>
+      {
+        throw new Error(err.message);
+      })
+      .then((response) => response.json())
+      .then((leaders) =>
+      {
+        return dispatch(addLeaders(leaders));
+      })
+      .catch((err) => dispatch(leadersFailed(err.message)));
+  }
+};
+
+export const leadersLoading = function()
+{
+  return { type: ActionTypes.LEADERS_LOADING }
+};
+
+export const leadersFailed = function(errmess)
+{
+  return {
+
+    type: ActionTypes.LEADERS_FAILED,
+    payload: errmess
+  };
+};
+
+export const addLeaders = function(leaders)
+{
+  return {
+
+    type: ActionTypes.ADD_LEADERS,
+    payload: leaders
   };
 };

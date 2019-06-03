@@ -59,8 +59,7 @@ class Contact extends Component {
   //values are passed to this function by the react-redux-form
   handleSubmit(values)
   {
-    console.log(`Current state is ${JSON.stringify(values, null, 2)}`);
-    alert(`Current state is ${JSON.stringify(values, null, 2)}`);
+    this.props.postFeedback(values);
     this.props.resetFeedbackForm();
   }
 
