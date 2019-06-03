@@ -31,12 +31,35 @@ export const fetchDishes = function()
     dispatch(dishesLoading(true));
 
     return fetch(`${baseUrl}/dishes`)
+      .then((response) =>
+      {
+        //check if request went well; if so return the response normally
+        //which will be passed on to the next promise handler below
+        if (response.ok === true)
+        {
+          return response;
+        }
+
+        else
+        {
+          let error = new Error(`Error ${response.status}: ${response.statusText}`);
+          error.response = response;
+
+          //throwing the error within the promise will direct it to the catch statement
+          throw error;
+        }
+      }, (err) =>
+      {
+        //error happened in communicating with server, without getting a response
+        throw new Error(err.message);
+      })
       //convert response's body into json
       .then((response) => response.json())
       .then((dishes) =>
       {
         return dispatch(addDishes(dishes));
-      });
+      })
+      .catch((err) => dispatch(dishesFailed(err.message)));
   }
 };
 
@@ -69,12 +92,30 @@ export const fetchComments = function()
   return function(dispatch)
   {
     return fetch(`${baseUrl}/comments`)
+      .then((response) =>
+      {
+        if (response.ok === true)
+        {
+          return response;
+        }
+
+        else
+        {
+          let error = new Error(`Error ${response.status}: ${response.statusText}`);
+          error.response = response;
+          throw error;
+        }
+      }, (err) =>
+      {
+        throw new Error(err.message);
+      })
       //convert response's body into json
       .then((response) => response.json())
       .then((comments) =>
       {
         return dispatch(addComments(comments));
-      });
+      })
+      .catch((err) => dispatch(commentsFailed(err.message)));
   }
 };
 
@@ -103,11 +144,29 @@ export const fetchPromos = function()
     dispatch(promosLoading(true));
 
     return fetch(`${baseUrl}/promotions`)
+      .then((response) =>
+      {
+        if (response.ok === true)
+        {
+          return response;
+        }
+
+        else
+        {
+          let error = new Error(`Error ${response.status}: ${response.statusText}`);
+          error.response = response;
+          throw error;
+        }
+      }, (err) =>
+      {
+        throw new Error(err.message);
+      })
       .then((response) => response.json())
       .then((promos) =>
       {
         return dispatch(addPromos(promos));
-      });
+      })
+      .catch((err) => dispatch(promosFailed(err.message)));
   }
 };
 

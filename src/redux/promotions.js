@@ -5,7 +5,7 @@ const initialState =
 {
   isLoading: true,
   errMessage: null,
-  dishes: []
+  promotions: []
 }
 
 export const Promotions = function(state = initialState, action)
