@@ -6,6 +6,9 @@ import { Link } from "react-router-dom";
 import { Loading } from "./LoadingComponent.js";
 import { baseUrl } from "../shared/baseUrl.js";
 
+//NPM animation package
+import { FadeTransform, Fade, Stagger } from "react-animation-components";
+
 const required = (val) =>
 {
   return val != null && val.length;
@@ -147,15 +150,18 @@ function RenderDish({dish})
 {
   return (
 
-    <Card>
-      <CardImg width="100%" src={`${baseUrl}/{${dish.image}`} alt={dish.name} />
+    //Card will initially be out of the screen and then pop out into it
+    <FadeTransform in transformProps={{existTransform: "scale(0.5) translateY(-50%)"}}>
+      <Card>
+        <CardImg width="100%" src={`${baseUrl}/{${dish.image}`} alt={dish.name} />
 
-      <CardBody>
-        <CardTitle>{dish.name}</CardTitle>
+        <CardBody>
+          <CardTitle>{dish.name}</CardTitle>
 
-        <CardText>{dish.description}</CardText>
-      </CardBody>
-    </Card>
+          <CardText>{dish.description}</CardText>
+        </CardBody>
+      </Card>
+    </FadeTransform>
   );
 }
 
@@ -166,11 +172,14 @@ function RenderComments({ comments, postComment, dishId })
     return (
 
       <div key={comment.id}>
-        <li>
-          <p>{comment.comment}</p>
-          { /* Intl.DateTimeFormat is a JavaScript Object to format Date strings. */ }
-          <p>-- {comment.author}, { new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "2-digit" }).format(new Date(Date.parse(comment.date))) }</p>
-        </li>
+        {/* react-animation-components animation */}
+        <Fade in>
+          <li>
+            <p>{comment.comment}</p>
+            { /* Intl.DateTimeFormat is a JavaScript Object to format Date strings. */ }
+            <p>-- {comment.author}, { new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "2-digit" }).format(new Date(Date.parse(comment.date))) }</p>
+          </li>
+        </Fade>
       </div>
     );
   });
@@ -186,9 +195,12 @@ function RenderComments({ comments, postComment, dishId })
     <div>
       <h4>Comments</h4>
 
-      <ul className="list-unstyled">
-        {items}
-      </ul>
+      {/* react-animation-components animation */}
+      <Stagger in>
+        <ul className="list-unstyled">
+            {items}
+        </ul>
+      </Stagger>
 
       <CommentForm dishId={dishId} postComment={postComment} />
     </div>

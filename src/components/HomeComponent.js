@@ -4,10 +4,11 @@ import { Card, CardImg, CardText, CardBody, CardTitle, CardSubtitle } from "reac
 import { Loading } from "./LoadingComponent.js";
 import { baseUrl } from "../shared/baseUrl.js";
 
+//NPM animation package
+import { FadeTransform } from "react-animation-components";
+
 //We could put this functional component in a separate file and use it in several
-//other cards, but in this project it is only used here. Item is between curly
-//braces because the parameter received is props, and we specifically want the
-//prop under the field name .item
+//other cards, but in this project it is only used here.
 function RenderCard({item, isLoading, errMess})
 {
   if (isLoading === true)
@@ -25,19 +26,22 @@ function RenderCard({item, isLoading, errMess})
   }
 
   return (
-    <Card>
-      <CardImg src={`${baseUrl}/${item.image}`} alt={item.name} />
+    //Card will initially be out of the screen and then pop out into it
+    <FadeTransform in transformProps={{existTransform: "scale(0.5) translateY(-50%)"}}>
+      <Card>
+        <CardImg src={`${baseUrl}/${item.image}`} alt={item.name} />
 
-      <CardBody>
-        <CardTitle>{item.name}</CardTitle>
+        <CardBody>
+          <CardTitle>{item.name}</CardTitle>
 
-        {/* If the item to render contains a designation property, add it as a
-            subtitle, otherwise just don't render anything (null) */}
-        {item.designation != null ? <CardSubtitle>{item.designation}</CardSubtitle> : null}
+          {/* If the item to render contains a designation property, add it as a
+              subtitle, otherwise just don't render anything (null) */}
+          {item.designation != null ? <CardSubtitle>{item.designation}</CardSubtitle> : null}
 
-        <CardText>{item.description}</CardText>
-      </CardBody>
-    </Card>
+          <CardText>{item.description}</CardText>
+        </CardBody>
+      </Card>
+    </FadeTransform>
   );
 }
 
