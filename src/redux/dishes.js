@@ -23,7 +23,7 @@ export const Dishes = function(state = initialState, action)
   {
     //ADD_DISHES carries the loaded dishes as the payload
     case ActionTypes.ADD_DISHES:
-      return {...state, isLoading: false, errMess: null, dishes: action.payload}
+      return {...state, isLoading: false, errMess: null, dishes: action.payload};
 
     case ActionTypes.DISHES_LOADING:
       //... operator expands the state properties into this object,
@@ -31,13 +31,13 @@ export const Dishes = function(state = initialState, action)
       //modify while preserving immutability. The rest of the properties
       //added will be either added as new ones (if they are new keys)
       //or will override the state's properties if they are the same
-      return {...state, isLoading: true, errMess: null, dishes: []}
+      return {...state, isLoading: true, errMess: null, dishes: []};
 
     //DISHES_FAILED action carries the errMess as its payload
     case ActionTypes.DISHES_FAILED:
-      return {...state, isLoading: false, errMess: action.payload, dishes: []}
+      return {...state, isLoading: false, errMess: action.payload, dishes: []};
 
     default:
       return state;
   }
-}
+};

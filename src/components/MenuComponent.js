@@ -3,6 +3,7 @@ import React from "react";
 import { Card, CardImg, CardImgOverlay, CardText, CardBody, CardTitle, Breadcrumb, BreadcrumbItem } from "reactstrap";
 import { Link } from "react-router-dom";
 import { Loading } from "./LoadingComponent.js";
+import { baseUrl } from "../shared/baseUrl.js";
 
 //This is another way of creating a component. The previous Presentational Component
 //that was the Menu was turned into two Functional Components (components that are
@@ -21,7 +22,8 @@ function RenderMenuItem({ dish, onClick })
     //state while also receiving the information of which Menu item was clicked
     <Card>
       <Link to={`/menu/${dish.id}`} >
-        <CardImg width="100%" src={dish.image} alt={dish.name} />
+        {/* Fetch image from the server */}
+        <CardImg width="100%" src={`${baseUrl}/${dish.image}`} alt={dish.name} />
 
         <CardImgOverlay>
           <CardTitle>{dish.name}</CardTitle>

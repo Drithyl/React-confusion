@@ -1,6 +1,7 @@
 
 import * as ActionTypes from "./ActionTypes.js";
 import { DISHES } from "../shared/dishes";
+import { baseUrl } from "../shared/baseUrl";
 
 //We define here the action creator function for the ADD_COMMENT action
 //This is the function that will return our action object to be dispatched
@@ -29,13 +30,13 @@ export const fetchDishes = function()
     //dispatch the dishesLoading action
     dispatch(dishesLoading(true));
 
-    //simulate server fetching waiting time and dispatch the action to add
-    //the dishes data to the store once the previous action is successful
-    setTimeout(() =>
-    {
-      dispatch(addDishes(DISHES));
-
-    }, 2000);
+    return fetch(`${baseUrl}/dishes`)
+      //convert response's body into json
+      .then((response) => response.json())
+      .then((dishes) =>
+      {
+        return dispatch(addDishes(dishes));
+      });
   }
 };
 
@@ -60,5 +61,75 @@ export const addDishes = function(dishes)
 
     type: ActionTypes.ADD_DISHES,
     payload: dishes
+  };
+};
+
+export const fetchComments = function()
+{
+  return function(dispatch)
+  {
+    return fetch(`${baseUrl}/comments`)
+      //convert response's body into json
+      .then((response) => response.json())
+      .then((comments) =>
+      {
+        return dispatch(addComments(comments));
+      });
+  }
+};
+
+export const commentsFailed = function(errmess)
+{
+  return {
+
+    type: ActionTypes.COMMENTS_FAILED,
+    payload: errmess
+  };
+};
+
+export const addComments = function(comments)
+{
+  return {
+
+    type: ActionTypes.ADD_COMMENTS,
+    payload: comments
+  };
+};
+
+export const fetchPromos = function()
+{
+  return function(dispatch)
+  {
+    dispatch(promosLoading(true));
+
+    return fetch(`${baseUrl}/promotions`)
+      .then((response) => response.json())
+      .then((promos) =>
+      {
+        return dispatch(addPromos(promos));
+      });
+  }
+};
+
+export const promosLoading = function()
+{
+  return { type: ActionTypes.PROMOS_LOADING }
+};
+
+export const promosFailed = function(errmess)
+{
+  return {
+
+    type: ActionTypes.PROMOS_FAILED,
+    payload: errmess
+  };
+};
+
+export const addPromos = function(promos)
+{
+  return {
+
+    type: ActionTypes.ADD_PROMOS,
+    payload: promos
   };
 };
