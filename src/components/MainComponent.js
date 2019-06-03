@@ -8,7 +8,7 @@ import { Switch, Route, Redirect, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 
 //import the addComment action creator so the action objects can be created and dispatched
-import { addComment, fetchDishes, fetchComments, fetchPromos } from "../redux/ActionCreators";
+import { postComment, fetchDishes, fetchComments, fetchPromos } from "../redux/ActionCreators";
 
 //import premade actions from the react-redux-form module to access actions.reset
 //to easily reset a form's state
@@ -43,14 +43,14 @@ const mapDispatchToProps = function(dispatch)
   return {
 
     //dispatch property; defines function to dispatch an addComment action
-    addComment: (dishId, rating, author, comment) =>
+    postComment: (dishId, rating, author, comment) =>
     {
       //dispatch function from the store supplied as parameter. Whenever the above
       //addComment property is invoked, the addComment action returned below will
       //get dispatched
       return dispatch(
         //ActionCreator function for adding comments that returns the action object
-        addComment(dishId, rating, author, comment)
+        postComment(dishId, rating, author, comment)
       );
     },
 
@@ -116,7 +116,7 @@ class Main extends Component {
 
     const DishWithId = ({match}) =>
     {
-      //Pass the addComment dispatch action function into the DishDetail component.
+      //Pass the postComment dispatch action function into the DishDetail component.
       //This function is defined above in the mapDispatchToProps function, and is
       //made available to the Main component here by the connect() function used
       //at the bottom of this file.
@@ -127,7 +127,7 @@ class Main extends Component {
           errMess={this.props.dishes.errMess}
           comments={this.props.comments.comments.filter((comment) => comment.dishId === parseInt(match.params.dishId, 10))}
           commentsErrMess={this.props.comments.errMess}
-          addComment={this.props.addComment}
+          postComment={this.props.postComment}
         />
       );
     };

@@ -6,19 +6,66 @@ import { baseUrl } from "../shared/baseUrl";
 //We define here the action creator function for the ADD_COMMENT action
 //This is the function that will return our action object to be dispatched
 //into the store
-export const addComment = function(dishId, rating, author, comment)
+export const addComment = function(comment)
 {
   return {
 
     type: ActionTypes.ADD_COMMENT,
-    payload:
+    payload: comment
+  };
+};
+
+export const postComment = function(dishId, rating, author, comment)
+{
+  return function(dispatch)
+  {
+    const newComment =
     {
       dishId: dishId,
       rating: rating,
       author: author,
-      comment: comment
-    }
-  };
+      comment: comment,
+      date: new Date().toISOString()
+    };
+
+    return fetch(`${baseUrl}/comments`, {
+
+      //when method is not specified it'll default to GET
+      method: "POST",
+      //POST requires you to send a body
+      body: JSON.stringify(newComment),
+      headers:
+      {
+        "Content-Type": "application/json"
+      },
+      credentials: "same-origin"
+    })
+    .then((response) =>
+    {
+      if (response.ok === true)
+      {
+        return response;
+      }
+
+      else
+      {
+        let error = new Error(`Error ${response.status}: ${response.statusText}`);
+        error.response = response;
+        throw error;
+      }
+    }, (err) =>
+    {
+      throw new Error(err.message);
+    })
+    .then((response) => response.json())
+    //server response should contain the updated comment with an id as well
+    .then((response) => dispatch(addComment(response)))
+    .catch((err) =>
+    {
+      console.log(`Post comments`, err.message);
+      alert(`Your comment could not be posted\nError: ${err.message}`);
+    });
+  }
 };
 
 //thunk. A thunk is a subroutine used to inject additional calculations into
@@ -30,6 +77,7 @@ export const fetchDishes = function()
     //dispatch the dishesLoading action
     dispatch(dishesLoading(true));
 
+    //fetch (cross-fetch) is inluded in React automatically when using the CreateReactApp()?
     return fetch(`${baseUrl}/dishes`)
       .then((response) =>
       {
