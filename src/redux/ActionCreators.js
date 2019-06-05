@@ -1,6 +1,5 @@
 
 import * as ActionTypes from "./ActionTypes.js";
-import { DISHES } from "../shared/dishes";
 import { baseUrl } from "../shared/baseUrl";
 
 //We define here the action creator function for the ADD_COMMENT action

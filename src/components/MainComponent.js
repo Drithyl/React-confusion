@@ -94,10 +94,6 @@ const mapDispatchToProps = function(dispatch)
 //create an App component that will then be exported to be rendered in index.js
 class Main extends Component {
 
-  constructor(props) {
-    super(props);
-  }
-
   //React lifecycle method that gets executed when this component
   //was mounted in the view, the perfect time to fetch application data
   componentDidMount()
